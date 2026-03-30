@@ -1,19 +1,15 @@
 "use client"
 
 import { useEffect, useRef, useCallback } from "react"
+import { Canvas } from "@react-three/fiber"
+import { Bear } from "./bear"
 
 interface LiquidEffectAnimationProps {
-  text?: string[]
-  subText?: string
-  tagline?: string
   backgroundColor?: string
   textColor?: string
 }
 
 export function LiquidEffectAnimation({
-  text,
-  subText,
-  tagline,
   backgroundColor = "#fafafa",
   textColor = "#1d1d1f",
 }: LiquidEffectAnimationProps) {
@@ -38,14 +34,12 @@ export function LiquidEffectAnimation({
     // Soft ambient light — very subtle, gives liquid something to reflect
     ctx.globalCompositeOperation = "multiply"
 
-    // Top-center cool wash
     const glow1 = ctx.createRadialGradient(w * 0.5, h * 0.1, 0, w * 0.5, h * 0.1, w * 0.6)
     glow1.addColorStop(0, "rgba(220, 225, 240, 0.6)")
     glow1.addColorStop(1, "rgba(250, 250, 250, 1)")
     ctx.fillStyle = glow1
     ctx.fillRect(0, 0, w, h)
 
-    // Bottom subtle warm tint
     const glow2 = ctx.createRadialGradient(w * 0.5, h * 0.95, 0, w * 0.5, h * 0.95, w * 0.5)
     glow2.addColorStop(0, "rgba(240, 230, 220, 0.4)")
     glow2.addColorStop(1, "rgba(250, 250, 250, 1)")
@@ -54,52 +48,8 @@ export function LiquidEffectAnimation({
 
     ctx.globalCompositeOperation = "source-over"
 
-    // Sub text — Apple-style tiny uppercase label
-    ctx.fillStyle = textColor
-    ctx.globalAlpha = 0.35
-    const subFontSize = Math.max(11, w * 0.009)
-    ctx.font = `600 ${subFontSize}px -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif`
-    ctx.textAlign = "center"
-    ctx.letterSpacing = "0.25em"
-    if (subText) {
-      ctx.fillText(subText.toUpperCase(), w / 2, h / 2 - w * 0.095)
-    }
-
-    // Main heading — SF Pro style, heavy weight, tight
-    ctx.globalAlpha = 1
-    ctx.letterSpacing = "-0.04em"
-    const fontSize = Math.min(w * 0.13, h * 0.19)
-    ctx.font = `700 ${fontSize}px -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif`
-    ctx.textAlign = "center"
-    ctx.textBaseline = "middle"
-
-    const lineHeight = fontSize * 1.08
-    const totalHeight = (text?.length || 0) * lineHeight
-    const startY = h / 2 - totalHeight / 2 + lineHeight / 2
-
-    text?.forEach((line, i) => {
-      ctx.fillStyle = textColor
-      ctx.globalAlpha = 1
-      ctx.fillText(line, w / 2, startY + i * lineHeight)
-    })
-
-    // Thin divider — barely there
-    ctx.globalAlpha = 0.12
-    ctx.fillStyle = textColor
-    const dividerY = startY + (text?.length || 0) * lineHeight + w * 0.018
-    ctx.fillRect(w / 2 - 30, dividerY, 60, 0.5)
-
-    // Tagline — light, airy
-    if (tagline) {
-      ctx.globalAlpha = 0.3
-      ctx.letterSpacing = "0.02em"
-      const tagFontSize = Math.max(11, w * 0.01)
-      ctx.font = `400 ${tagFontSize}px -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif`
-      ctx.fillText(tagline, w / 2, dividerY + w * 0.025)
-    }
-
     return offscreen.toDataURL("image/png")
-  }, [text, subText, tagline, backgroundColor, textColor])
+  }, [backgroundColor])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -142,9 +92,21 @@ export function LiquidEffectAnimation({
         id="liquid-canvas"
         className="fixed inset-0 w-full h-full"
       />
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <Canvas
+          camera={{ position: [0, 0, 10], fov: 25 }}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <ambientLight intensity={1.5} />
+          <directionalLight position={[5, 10, 5]} intensity={1.2} />
+          <pointLight position={[-5, -5, -5]} intensity={0.5} />
+          <Bear />
+        </Canvas>
+      </div>
     </div>
   )
 }
+
 
 declare global {
   interface Window {
