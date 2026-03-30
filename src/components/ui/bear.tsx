@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
-import { useSpring, animated } from "@react-spring/three"
+import { useSpring, animated, config } from "@react-spring/three"
 import * as THREE from "three"
 
 export function Bear() {
@@ -10,28 +10,40 @@ export function Bear() {
   const leftEyeRef = useRef<THREE.Group>(null)
   const rightEyeRef = useRef<THREE.Group>(null)
 
+  const [isPoked, setIsPoked] = useState(false)
+
   // Animation states using react-spring
-  const [springs] = useSpring(() => ({
-    position: [0, 0, 0] as [number, number, number],
-    config: { mass: 1, tension: 180, friction: 12 },
-  }))
+  const { springScale, springRotation } = useSpring({
+    springScale: isPoked ? 0.8 : 0.6,
+    springRotation: isPoked ? [0.2, 0, 0] : [0, 0, 0],
+    config: config.wobbly,
+    onRest: () => {
+      if (isPoked) setIsPoked(false)
+    },
+  })
 
   // Animation loop for subtle movement and eye tracking
   useFrame((state) => {
     if (bearGroup.current) {
       // Add very subtle floating animation
-      // bearGroup.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05
+      bearGroup.current.position.y = Math.sin(state.clock.getElapsedTime() * 0.5) * 0.05
 
       // Blink animation
       if (leftEyeRef.current && rightEyeRef.current) {
         const blinkInterval = 3
         const time = state.clock.getElapsedTime()
         const blink = time % blinkInterval > blinkInterval - 0.15
-        leftEyeRef.current.scale.y = blink ? 0.1 : 1
-        rightEyeRef.current.scale.y = blink ? 0.1 : 1
+        
+        // When poked, eyes stay open and wide
+        if (isPoked) {
+          leftEyeRef.current.scale.y = 1.2
+          rightEyeRef.current.scale.y = 1.2
+        } else {
+          leftEyeRef.current.scale.y = blink ? 0.1 : 1
+          rightEyeRef.current.scale.y = blink ? 0.1 : 1
+        }
 
         // Eye tracking
-        // state.pointer gives us [-1, 1] for x and y
         const target = new THREE.Vector3(state.pointer.x * 2, state.pointer.y * 2, 2)
         leftEyeRef.current.lookAt(target)
         rightEyeRef.current.lookAt(target)
@@ -39,11 +51,19 @@ export function Bear() {
     }
   })
 
+  const handlePoke = () => {
+    setIsPoked(true)
+  }
+
   return (
     <animated.group
       ref={bearGroup}
-      position={springs.position as unknown as [number, number, number]}
-      scale={[0.6, 0.6, 0.6]}
+      scale={springScale.to((s) => [s, s, s])}
+      rotation={springRotation as any}
+      onPointerDown={(e) => {
+        e.stopPropagation()
+        handlePoke()
+      }}
     >
       {/* Bear Head */}
       <group position={[0, 0.8, 0]}>
@@ -86,16 +106,25 @@ export function Bear() {
         </group>
 
         {/* Nose */}
-        <mesh position={[0, -0.15, 0.25]}>
-          <sphereGeometry args={[0.12, 16, 16]} />
-          <meshStandardMaterial color="black" />
+        <mesh position={[0, -0.1, 0.35]}>
+          <sphereGeometry args={[0.12, 24, 24]} />
+          <meshStandardMaterial color="#2a2a2a" roughness={0.3} metalness={0.2} />
         </mesh>
 
-        {/* Smile */}
-        <mesh position={[0, -0.5, 0.25]} rotation={[0, 0, 0]}>
-          <torusGeometry args={[0.3, 0.04, 8, 16, Math.PI]} />
-          <meshStandardMaterial color="black" />
-        </mesh>
+        {/* Mouth - 3D and Reactive */}
+        <group position={[0, -0.45, 0.25]}>
+          <mesh scale={[1, isPoked ? 1.5 : 0.4, 0.2]}>
+            <sphereGeometry args={[0.3, 32, 32]} />
+            <meshStandardMaterial color="#000000" roughness={0.1} />
+          </mesh>
+          {/* Tongue/Inner Mouth when open */}
+          {isPoked && (
+            <mesh position={[0, -0.1, 0.1]} scale={[0.6, 0.4, 0.1]}>
+              <sphereGeometry args={[0.2, 16, 16]} />
+              <meshStandardMaterial color="#ff4d4d" />
+            </mesh>
+          )}
+        </group>
       </group>
 
       {/* Ears */}

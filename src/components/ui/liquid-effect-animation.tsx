@@ -102,7 +102,7 @@ export function LiquidEffectAnimation({
       <div className="absolute inset-0 z-10 pointer-events-none">
         <Canvas
           camera={{ position: [0, 0, 10], fov: 25 }}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%", pointerEvents: "auto" }}
         >
           <ambientLight intensity={1.5} />
           <directionalLight position={[5, 10, 5]} intensity={1.2} />
