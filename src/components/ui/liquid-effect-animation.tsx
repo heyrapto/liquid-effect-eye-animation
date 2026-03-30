@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react"
 import { Canvas } from "@react-three/fiber"
-import { Bear } from "./bear"
+import { GuardianDog } from "./guardian-dog"
 
 interface LiquidEffectAnimationProps {
   backgroundColor?: string
@@ -50,8 +50,8 @@ export function LiquidEffectAnimation({
 
     // Add very subtle noise to make liquid effect visible
     for (let i = 0; i < 1000; i++) {
-        ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.02})`
-        ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1)
+      ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.02})`
+      ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1)
     }
 
     return offscreen.toDataURL("image/png")
@@ -107,12 +107,13 @@ export function LiquidEffectAnimation({
           <ambientLight intensity={1.5} />
           <directionalLight position={[5, 10, 5]} intensity={1.2} />
           <pointLight position={[-5, -5, -5]} intensity={0.5} />
-          <Bear />
+          <GuardianDog />
         </Canvas>
       </div>
     </div>
   )
 }
+
 
 
 declare global {
