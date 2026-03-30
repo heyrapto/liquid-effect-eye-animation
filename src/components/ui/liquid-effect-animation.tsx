@@ -48,6 +48,12 @@ export function LiquidEffectAnimation({
 
     ctx.globalCompositeOperation = "source-over"
 
+    // Add very subtle noise to make liquid effect visible
+    for (let i = 0; i < 1000; i++) {
+        ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.02})`
+        ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1)
+    }
+
     return offscreen.toDataURL("image/png")
   }, [backgroundColor])
 
@@ -64,12 +70,13 @@ export function LiquidEffectAnimation({
 
       const canvas = document.getElementById('liquid-canvas');
       if (canvas) {
+        console.log('Initializing LiquidBackground...');
         const app = LiquidBackground(canvas);
         app.loadImage('${dataUrl}');
         app.liquidPlane.material.metalness = 0.35;
         app.liquidPlane.material.roughness = 0.45;
-        app.liquidPlane.uniforms.displacementScale.value = 2;
-        app.setRain(false);
+        app.liquidPlane.uniforms.displacementScale.value = 4; // Increased for visibility
+        app.setRain(true); // Added rain to see if anything moves
         window.__liquidApp = app;
       }
     `

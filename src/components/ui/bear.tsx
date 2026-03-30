@@ -64,23 +64,23 @@ export function Bear() {
         {/* Eyes - using spheres for better tracking */}
         <group ref={leftEyeRef} position={[-0.4, 0.2, 0.3]}>
           <mesh>
-            <sphereGeometry args={[0.15, 16, 16]} />
+            <sphereGeometry args={[0.2, 16, 16]} />
             <meshStandardMaterial color="black" />
           </mesh>
           {/* Pupil highlight */}
-          <mesh position={[0, 0, 0.14]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
+          <mesh position={[0, 0, 0.18]}>
+            <sphereGeometry args={[0.08, 16, 16]} />
             <meshStandardMaterial color="white" />
           </mesh>
         </group>
         <group ref={rightEyeRef} position={[0.4, 0.2, 0.3]}>
           <mesh>
-            <sphereGeometry args={[0.15, 16, 16]} />
+            <sphereGeometry args={[0.2, 16, 16]} />
             <meshStandardMaterial color="black" />
           </mesh>
           {/* Pupil highlight */}
-          <mesh position={[0, 0, 0.14]}>
-            <sphereGeometry args={[0.04, 8, 8]} />
+          <mesh position={[0, 0, 0.18]}>
+            <sphereGeometry args={[0.08, 16, 16]} />
             <meshStandardMaterial color="white" />
           </mesh>
         </group>
