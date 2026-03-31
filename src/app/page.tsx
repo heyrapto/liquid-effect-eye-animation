@@ -6,7 +6,6 @@ export default function Home() {
     <main>
       <LiquidEffectAnimation
         backgroundColor="#fafafa"
-        textColor="#1d1d1f"
       />
     </main>
   );

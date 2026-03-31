@@ -6,12 +6,10 @@ import { GuardianDog } from "./guardian-dog"
 
 interface LiquidEffectAnimationProps {
   backgroundColor?: string
-  textColor?: string
 }
 
 export function LiquidEffectAnimation({
   backgroundColor = "#fafafa",
-  textColor = "#1d1d1f",
 }: LiquidEffectAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
